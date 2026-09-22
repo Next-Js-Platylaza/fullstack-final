@@ -1,34 +1,38 @@
 import { Prisma } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 
+const generatedEmails: string[] = ["1@gmail.com"];
+const generatedProductIDs: string[] = [];
+
 export type UserData = Prisma.UserCreateInput;
 export function generateUserData(): UserData {
-    return {
-            email: faker.internet.email(),
+    const email = faker.internet.email();
+    const data = {
+            email,
             password: faker.internet.password(),
             products: {
                 create: generateProductsData(),
             },
             soldOrders: {
-                create: generateOrdersData(),
+                create: generateSoldOrdersData(),
             },
             boughtOrders: {
-                create: generateOrdersData(),
+                create: generateBoughtOrdersData(),
             }
         };
+    generatedEmails.push(email);
+    return data;
 };
 
 export type ProductData = Omit<Prisma.ProductCreateInput, "seller">;
 export function generateProductData(): ProductData {
+    const id = faker.database.mongodbObjectId();
+    generatedProductIDs.push(id);
     return {
+            id,
             name: faker.commerce.productName(),
             price: parseFloat(faker.commerce.price()),
             isForSale: faker.datatype.boolean(),
-            /*seller: {
-                connect: {
-                    email: faker.internet.email(),
-                }
-            }*/
         };
 };
 export function generateProductsData(): ProductData[] {
@@ -42,32 +46,58 @@ export function generateProductsData(): ProductData[] {
     return productsData;
 };
 
-export type OrderData = Prisma.OrderCreateInput //Omit<Prisma.OrderCreateInput, "product" | "buyer" | "seller">;
-export function generateOrderData(): OrderData {
+export type SoldOrderData = Omit<Prisma.OrderCreateInput, "seller">;
+export function generateSoldOrderData(): SoldOrderData {
+    const otherEmail = generatedEmails[Math.floor(Math.random() * generatedEmails.length)];
+    const productID = generatedProductIDs[Math.floor(Math.random() * generatedProductIDs.length)];
     return {
             quantity: faker.number.int({min: 1, max: 50}),
             product: {
                 connect: {
-                    id: faker.number.int({min: 1, max: 5}).toString(),
+                    id: productID,
                 }
             },
             buyer: {
                 connect: {
-                    email: faker.internet.email(),
+                    email: otherEmail,
+                }
+            },
+        };
+};
+export function generateSoldOrdersData(): SoldOrderData[] {
+    const ordersData: SoldOrderData[] = []
+    const length = faker.number.int({min: 1, max: 5});
+    for (let i = 0; i < length; i++) {
+        const orderData = generateSoldOrderData();
+        ordersData.push(orderData);
+    }
+
+    return ordersData;
+};
+
+export type BoughtOrderData = Omit<Prisma.OrderCreateInput, "buyer">;
+export function generateBoughtOrderData(): BoughtOrderData {
+    const otherEmail = generatedEmails[Math.floor(Math.random() * generatedEmails.length)];
+    const productID = generatedProductIDs[Math.floor(Math.random() * generatedProductIDs.length)];
+    return {
+            quantity: faker.number.int({min: 1, max: 50}),
+            product: {
+                connect: {
+                    id: productID,
                 }
             },
             seller: {
                 connect: {
-                    email: faker.internet.email(),
+                    email: otherEmail,
                 }
-            }
+            },
         };
 };
-export function generateOrdersData(): OrderData[] {
-    const ordersData: OrderData[] = []
+export function generateBoughtOrdersData(): BoughtOrderData[] {
+    const ordersData: BoughtOrderData[] = []
     const length = faker.number.int({min: 1, max: 5});
     for (let i = 0; i < length; i++) {
-        const orderData = generateOrderData();
+        const orderData = generateBoughtOrderData();
         ordersData.push(orderData);
     }
 
