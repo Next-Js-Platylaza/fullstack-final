@@ -18,7 +18,7 @@ export default async function Home() {
         action={createProduct}
         buttonsDiv={<div className="flex flex-row w-full">
             <div className="ml-auto">
-                <button type="submit">Create Product</button>
+                <button type="submit" className="btn">Create Product</button>
             </div>
           </div>}
         product={undefined}

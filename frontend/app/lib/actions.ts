@@ -4,13 +4,20 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { Order, Product } from "./definitions";
-import { getLoggedInUser, isLoggedIn } from "./session";
+import { getLoggedInUser } from "./session";
 
-export async function createAccount(formData: FormData) {
-    const email = formData.get("email");
+export async function createAccount(prevState: AccountFormState, formData: FormData) {
+    const email = formData.get("email") as string;
     const password = formData.get("password");
+    const callbackUrl = formData.get("callback-url") as string ?? "/products";
 
     try {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!email) return {error: "Email missing."};
+        if (!emailRegex.test(email)) return {error: "Invalid email."};
+        if (!password)  return {error: "Password missing."};
+
         const result = await fetch("http://localhost:3000/signup", {
             method: "POST",
             body: JSON.stringify({
@@ -24,15 +31,9 @@ export async function createAccount(formData: FormData) {
     } catch (err) {
         redirect("/");
     }
-    
-    redirect("/login");
-}
 
-export async function login(formData: FormData) {
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const callbackUrl = formData.get("callback-url") as string ?? "/products";
-
+    // Login
+    let isLoggedIn = false;
     try{
         const result = await fetch("http://localhost:3000/login", {
             method: "POST",
@@ -48,14 +49,68 @@ export async function login(formData: FormData) {
         const responseJSON = await result.json();
         const token = responseJSON.token;
 
+        if (token) isLoggedIn = true;
+        else return {error: "Email or password is incorrect."};
+
         const cookiesStore = await cookies();
         cookiesStore.set("token", token);
     } catch (err) {
         console.log("error");
         console.log(err);
+        return {error: "Failed to login, please try again later."}
     }
 
-    redirect(callbackUrl);
+    if (isLoggedIn)
+        redirect(callbackUrl);
+    else
+        redirect(`/login?callbackUrl=${callbackUrl}`);
+}
+
+export type AccountFormState = {
+    error: string | null,
+}
+export async function login(prevState: AccountFormState, formData: FormData) {
+    const email = formData.get("email") as string;
+    const password = formData.get("password");
+    const callbackUrl = formData.get("callback-url") as string ?? "/products";
+    let isLoggedIn = false;
+
+    try{
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!email) return {error: "Email missing."};
+        if (!emailRegex.test(email)) return {error: "Invalid email."};
+        if (!password)  return {error: "Password missing."};
+    
+        const result = await fetch("http://localhost:3000/login", {
+            method: "POST",
+            body: JSON.stringify({
+                email,
+                password
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+
+        const responseJSON = await result.json();
+        const token = responseJSON.token;
+
+        if (token) isLoggedIn = true;
+        else return {error: "Email or password is incorrect."};
+
+        const cookiesStore = await cookies();
+        cookiesStore.set("token", token);
+    } catch (err) {
+        console.log("error");
+        console.log(err);
+        return {error: "Failed to login, please try again later."}
+    }
+
+    if (isLoggedIn)
+        redirect(callbackUrl);
+    else
+        return {error: "Failed to login, please try again later."};
 }
 
 export async function logout(formData: FormData) {

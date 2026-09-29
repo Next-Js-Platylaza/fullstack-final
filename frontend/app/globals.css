@@ -15,6 +15,9 @@
 .btn {
   @apply border-1 px-2 py-1 mx-1 rounded-md transition-colors bg-gray-200 hover:bg-gray-300 active:bg-gray-400 active:text-white active:border-gray-800;
 }
+.btn-w-full {
+  @apply border-1 px-2 py-1 w-full rounded-md transition-colors bg-gray-200 hover:bg-gray-300 active:bg-gray-400 active:text-white active:border-gray-800;
+}
 .nav-btn {
   @apply flex items-center justify-center bg-gray-300 hover:bg-gray-200 active:bg-gray-400 active:text-white min-w-30 h-full m-auto border-5 border-gray-600 hover:border-gray-400 active:border-gray-700;
 }

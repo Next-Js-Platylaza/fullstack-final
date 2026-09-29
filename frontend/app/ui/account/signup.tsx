@@ -1,20 +1,29 @@
+"use client"
+
 import Link from "next/link";
-import { createAccount } from "../../lib/actions";
+import { AccountFormState, createAccount } from "../../lib/actions";
+import { useActionState, useState } from "react";
+import AccountCredentialsInput from "./account-credentials-input";
+import { useSearchParams } from "next/navigation";
 
 export default function SignupForm(){
+    const searchParams = useSearchParams();
+    const rawCallbackUrl = searchParams.get("callbackUrl");
+    
+    const isSafeRedirect = rawCallbackUrl && rawCallbackUrl.startsWith("/") && !rawCallbackUrl.startsWith("//");
+    const safeUrl = isSafeRedirect ? rawCallbackUrl : null;
+
+    const initialState: AccountFormState = {error: null};
+    const [formState, formAction, isPending] = useActionState(createAccount, initialState)
+    
+    const [doShowPass, setDoShowPass] = useState(false);
+
     return <><div className="flex flex-col gap-[32px]">
-          <form className="w-full" action={createAccount}>
-            <div className="border-1 border-black my-1">
-              <label htmlFor="email">Email:</label>
-              <input type="text" name="email"></input>
-            </div>
-            <div className="border-1 border-black my-1">
-              <label htmlFor="password">Password:</label>
-              <input type="password" name="password"></input>
-            </div>
-            <button type="submit" className="w-full border-1 p-1 my-1">Create Account</button>
-          </form>
-          </div>
-          <h4 className="mt-5 m-auto" >Already have an account? <Link href="/login" className="text-blue-600 underline hover:text-blue-800 backdrop-blur-none">Login here.</Link></h4>
-        </>
+      <form className="w-full flex flex-col border-2 p-4" action={formAction}>
+        <AccountCredentialsInput formState={formState} doShowPass={doShowPass} setDoShowPass={setDoShowPass}/>
+        <button type="submit" className="btn-w-full mt-2" onClick={()=>setDoShowPass(false)}>Create Account</button>
+      </form>
+    </div>
+    <h4 className="mt-5 m-auto" >Already have an account? <Link href={`/login${!safeUrl ? "" : `?callbackUrl=${safeUrl}`}`} className="text-blue-600 underline hover:text-blue-800 backdrop-blur-none">Login here.</Link></h4>
+  </>
 }
