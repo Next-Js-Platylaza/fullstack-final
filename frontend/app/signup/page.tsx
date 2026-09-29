@@ -1,4 +1,4 @@
-import SignupForm from "../ui/signup";
+import SignupForm from "../ui/account/signup";
 
 export default function Home() {
   return (

@@ -1,17 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./ui/nav/navbar";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import LoginLogoutButton from "./ui/nav/login-logout-button";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,9 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-screen overflow-hidden">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen flex flex-col m-0 p-0 overflow-hidden`}
+        className={`antialiased h-screen flex flex-col m-0 p-0 overflow-hidden`}
       >
-        <Navbar/>
+        <Navbar loginLogoutBtn={<LoginLogoutButton/>}/>
         <div className="flex-1 overflow-y-auto">
             <main className="flex flex-col min-h-full w-full justify-center items-center p-4">
                 {children}

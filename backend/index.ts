@@ -63,8 +63,29 @@ app.post("/login", async (req, res) => {
     }
 });
 
+// Product by id - (Buyer?)
+app.get("/products/:id", auth, async (req: CustomRequest, res) => {
+    const user = req.user;
+	const id = req.params.id as string;
+    try {
+		if (!user?.email) throw new Error("Not logged in");
+
+        const result = await prisma.product.findFirst({
+            where: {
+                id,
+            }
+        })
+        res.status(200).json({product: result});
+    } catch (err)
+    {
+        console.log("error");
+        console.log(err);
+        res.status(400).json({"message": `${err}`});
+    }
+});
+
 // Products - (Public)
-app.get("/products/forsale", async (req, res) => {
+app.get("/products-forsale", async (req, res) => {
     try {
         const result = await prisma.product.findMany({
             where: {
@@ -192,7 +213,7 @@ app.get("/orders", auth, async (req: CustomRequest, res) => {
                 [isSeller ? "sellerEmail" : "buyerEmail"]: user.email
             }
         })
-        res.status(200).json({products: result});
+        res.status(200).json({orders: result});
     } catch (err)
     {
         console.log("error");

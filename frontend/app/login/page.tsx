@@ -1,4 +1,4 @@
-import LoginForm from "../ui/login";
+import LoginForm from "../ui/account/login";
 import Navbar from "../ui/nav/navbar";
 
 export default function Home() {

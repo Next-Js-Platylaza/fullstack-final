@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createAccount } from "../lib/actions";
+import { createAccount } from "../../lib/actions";
 
 export default function SignupForm(){
     return <><div className="flex flex-col gap-[32px]">
