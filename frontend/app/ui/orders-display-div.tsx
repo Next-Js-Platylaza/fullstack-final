@@ -14,21 +14,29 @@ export default function OrdersDisplayDiv(props: {ordersSold: Order[] | undefined
         setIsBuyerView((b) => b = !b);
     }
 
+    const ordersIsPlural = ordersPurchased?.length != 1
 
-    return   (<>
-      <h1>{isBuyerView ? "Purchased" : "Sold"} Orders</h1>
-      <button className="border-1 px-1" onClick={handleViewToggle}>Click for {isBuyerView ? "sold" : "purchased"} orders</button>
+    return   (<div className="mb-auto mt-10 flex flex-col items-center">
+    <div className="flex flex-col items-center mb-10">
+
+      <h1 className="text-2xl">{isBuyerView ? "Purchased" : "Sold"} Orders:</h1>
+      <button className="btn mt-3" onClick={handleViewToggle}>{isBuyerView ? "Sold" : "Purchased"} orders</button>
+    </div>
       {isBuyerView ? <>
-        <p>There are {ordersPurchased?.length} orders</p>
-        {ordersPurchased?.map((order, index) => 
-            <OrderDiv order={order} key={index} isSeller={!isBuyerView} product={productsPurchased.filter((p)=>p.id == order.productId)[0]} />
-        )}
+        <p className="my-2 text-lg">There {ordersIsPlural ? "are" : "is"} {ordersPurchased?.length } order{ordersIsPlural ? "s" : ""}</p>
+        <div className="flex flex-col max-w-200 min-w-75">
+          {ordersPurchased?.map((order, index) => 
+              <OrderDiv order={order} key={index} isSeller={!isBuyerView} product={productsPurchased.filter((p)=>p.id == order.productId)[0]} />
+          )}
+        </div>
       </> : <>
         <p>There are {ordersSold?.length} orders</p>
-        {ordersSold?.map((order, index) => 
-            <OrderDiv order={order} key={index} isSeller={!isBuyerView} product={productsSold.filter((p)=>p.id == order.productId)[0]} />
-        )}
+        <div className="flex flex-col max-w-200 min-w-75">
+          {ordersSold?.map((order, index) => 
+              <OrderDiv order={order} key={index} isSeller={!isBuyerView} product={productsSold.filter((p)=>p.id == order.productId)[0]} />
+          )}
+        </div>
       </>}
-    </>
+    </div>
   );
 }

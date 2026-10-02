@@ -11,11 +11,11 @@ export default function ProductDiv(props: {product: Product, orders: Order[] | u
     else
         soldText = `${orders?.length}  order${orders?.length == 1 ? "" : "s"} sold.`;
 
-    return <div className="border-2 p-2 my-0.5 bg-slate-100">
+    return <div className="border-2 py-2 px-3 my-0.5 bg-slate-100 min-w-62 max-w-150">
         <h3>- {product.name}</h3>
         <h4>${product.price} each</h4>
         <h4>{soldText}</h4>
-        <h4>Seller: {product.sellerEmail}</h4>
+        <h4 className="mb-1">Seller: {product.sellerEmail}</h4>
         <Link href={`/products/${product.id}`} className="btn">Place Order</Link>
     </div>
 }
