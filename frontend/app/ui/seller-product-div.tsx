@@ -34,7 +34,7 @@ export default function SellerProductDiv(props: {product: Product, orders: Order
             action={updateProduct}
             onSubmit={handleEditingToggle}
             buttonsDiv={<div className="flex flex-row w-full">
-                <button type="button" onClick={()=>deleteProductWithId(product.id)} className="mr-auto btn mt-2">Delete</button>
+                <button type="button" onClick={()=>{deleteProductWithId(product.id)}} className="mr-auto btn mt-2">Delete</button>
                 <div className="ml-auto">
                     <button type="button" onClick={handleEditingToggle} className="btn mt-2 mr-1">Cancel</button>
                     <button type="submit" className="btn mt-2">Save</button>
